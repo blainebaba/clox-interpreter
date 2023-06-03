@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "debug.h"
+#include "value.h"
 
 void disassembleChunk(Chunk* chunk, const char* name) {
     printf("== %s ==\n", name);
@@ -18,7 +19,9 @@ static int simpleInstruction(const char* name, int offset) {
 static int constantInstruction(const char* name, int offset, Chunk* chunk) {
     int index = chunk->code[offset + 1];
     Value constant = chunk->constants.values[index];
-    printf("%-16s %4d '%g'\n", name, index, constant);
+    printf("%-16s %4d '", name, index);
+    printValue(constant);
+    printf("'\n");
     return offset + 2;
 }
 
@@ -41,4 +44,12 @@ int disassembleInstruction(Chunk* chunk, int offset) {
             printf("Unknown opcode %d\n", instruction);
             return offset + 1;
     }
+}
+
+void printValueStack(Value* stack, Value* stackTop) {
+    printf("Value Stack: [ ");
+    for (Value* cur = stack; cur < stackTop; cur++) {
+        printf("%g ", *cur);
+    }
+    printf("]\n");
 }
