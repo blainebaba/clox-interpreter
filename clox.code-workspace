@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"stdbool.h": "c",
+			"compare": "cpp",
+			"type_traits": "cpp",
+			"cstdlib": "c",
+			"chunk.h": "c"
+		}
+	}
+}
