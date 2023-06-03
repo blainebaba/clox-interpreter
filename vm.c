@@ -21,6 +21,12 @@ void freeVM() {
 static InterpretResult run() {
     #define READ_BYTE() (*vm.ip++)
     #define READ_CONST() (vm.chunk->constants.values[READ_BYTE()])
+    #define BINARY_OP(op) do { \
+        double b = pop(); \
+        double a = pop(); \
+        push(a op b); \
+    } while(false)
+
 
     for (;;) {
         #ifdef DEBUG_PRINT_VALUE_STACK
@@ -34,20 +40,23 @@ static InterpretResult run() {
         uint8_t instruction = READ_BYTE();
 
         switch(instruction) {
-            case OP_RETURN: {
+            case OP_RETURN:
                 printValue(pop());
                 printf("\n");
                 return INTERPRET_SUCCESS;
-            }
-            case OP_CONSTANT: {
-                Value constant = READ_CONST();
-                push(constant);
-                break;
-            }
+            // arithmetic
+            case OP_CONSTANT: push(READ_CONST()); break;
+            case OP_NEGATE: push(-pop()); break;
+            case OP_ADD: BINARY_OP(+); break;
+            case OP_SUBTRACT: BINARY_OP(-); break;
+            case OP_MULTIPLY: BINARY_OP(*); break;
+            case OP_DIVIDE: BINARY_OP(/); break;
         }
     }
 
     #undef READ_BYTE
+    #undef READ_CONST
+    #undef BINARY_OP
 }
 
 InterpretResult interpret(Chunk* chunk) {
