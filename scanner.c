@@ -119,9 +119,56 @@ static Token number() {
     return makeToken(TOKEN_NUMBER);
 }
 
+static TokenType checkKeyword(const char* keyword, int length, TokenType type) {
+    if (scanner.current - scanner.start == length &&
+        memcmp(scanner.start, keyword, length) == 0) {
+        return type;
+    } else {
+        return TOKEN_IDENTIFIER;
+    }
+}
+
+static TokenType identifierType() {
+    // match keywords
+    switch(scanner.start[0]) {
+        case 'a': return checkKeyword("and", 3, TOKEN_AND);
+        case 'c': return checkKeyword("class", 5, TOKEN_CLASS);
+        case 'e': return checkKeyword("else", 4, TOKEN_ELSE);
+        case 'f': 
+            if (scanner.current - scanner.start > 1) {
+                switch (scanner.start[1]) {
+                    case 'a': return checkKeyword("false", 5, TOKEN_FALSE);
+                    case 'o': return checkKeyword("for", 3, TOKEN_FOR);
+                    case 'u': return checkKeyword("fun", 3, TOKEN_FUN);
+                }
+            }
+            break;
+        case 'i': return checkKeyword("if", 2, TOKEN_IF);
+        case 'n': return checkKeyword("nil", 3, TOKEN_NIL);
+        case 'o': return checkKeyword("or", 2, TOKEN_OR);
+        case 'p': return checkKeyword("print", 5, TOKEN_PRINT);
+        case 'r': return checkKeyword("return", 5, TOKEN_RETURN);
+        case 's': return checkKeyword("super", 5, TOKEN_SUPER);
+        case 't':
+            if (scanner.current - scanner.start > 1) {
+                switch (scanner.start[1]) {
+                    case 'h': return checkKeyword("this", 4, TOKEN_THIS);
+                    case 'r': return checkKeyword("true", 4, TOKEN_TRUE);
+                }
+            }
+            break;
+        case 'v': return checkKeyword("var", 3, TOKEN_VAR);
+        case 'w': return checkKeyword("while", 5, TOKEN_WHILE);
+    }
+
+    // if no keywords matched, it is an identifier
+    return TOKEN_IDENTIFIER;
+}
+
 // scan identifier
 static Token identifier() {
-    return makeErrorToken("NOT IMPLEMENTED");
+    while (isAlpha(peek()) || isDigit(peek())) advance();
+    return makeToken(identifierType());
 }
 
 Token scanToken() {
