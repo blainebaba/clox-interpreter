@@ -10,7 +10,8 @@
 			"compare": "cpp",
 			"type_traits": "cpp",
 			"cstdlib": "c",
-			"chunk.h": "c"
+			"chunk.h": "c",
+			"scanner.h": "c"
 		}
 	}
 }
