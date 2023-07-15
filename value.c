@@ -26,5 +26,23 @@ void freeValueArray(ValueArray* array) {
 }
 
 void printValue(Value value) {
-    printf("%g", value);
+    switch(value.type) {
+        case VAL_NUMBER: printf("%g", AS_NUMBER(value)); break;
+        case VAL_BOOL: printf(AS_BOOL(value) ? "true" : "false"); break;
+        case VAL_NIL: printf("nil");
+        default: return;
+    }
+}
+
+// can't use memcmp(), because value of unused bits are undefined.
+bool valueEqual(Value value1, Value value2) {
+    if (value1.type != value2.type) {
+        return false;
+    }
+    switch(value1.type) {
+        case VAL_BOOL: return AS_BOOL(value1) == AS_BOOL(value2);
+        case VAL_NIL: return true;
+        case VAL_NUMBER: return AS_NUMBER(value1) == AS_NUMBER(value2);
+        default: return false;
+    }
 }

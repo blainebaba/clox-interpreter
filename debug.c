@@ -36,20 +36,27 @@ int disassembleInstruction(Chunk* chunk, int offset) {
 
     uint8_t instruction = chunk->code[offset];
     switch (instruction) {
-        case OP_RETURN:
-            return simpleInstruction("OP_RETURN", offset);
-        case OP_CONSTANT:
-            return constantInstruction("OP_CONSTANT", offset, chunk);
-        case OP_NEGATE:
-            return simpleInstruction("OP_NEGATE", offset);
-        case OP_ADD:
-            return simpleInstruction("OP_ADD", offset);
-        case OP_SUBTRACT:
-            return simpleInstruction("OP_SUBTRACT", offset);
-        case OP_MULTIPLY:
-            return simpleInstruction("OP_MULTIPLY", offset);
-        case OP_DIVIDE:
-            return simpleInstruction("OP_DIVIDE", offset);
+        case OP_RETURN: return simpleInstruction("OP_RETURN", offset);
+        case OP_CONSTANT: return constantInstruction("OP_CONSTANT", offset, chunk);
+
+        case OP_NEGATE: return simpleInstruction("OP_NEGATE", offset);
+        case OP_ADD: return simpleInstruction("OP_ADD", offset);
+        case OP_SUBTRACT: return simpleInstruction("OP_SUBTRACT", offset);
+        case OP_MULTIPLY: return simpleInstruction("OP_MULTIPLY", offset);
+        case OP_DIVIDE: return simpleInstruction("OP_DIVIDE", offset);
+
+        case OP_TRUE: return simpleInstruction("OP_TRUE", offset);
+        case OP_FALSE: return simpleInstruction("OP_FALSE", offset);
+        case OP_NIL: return simpleInstruction("OP_NIL", offset);
+
+        case OP_NOT: return simpleInstruction("OP_NOT", offset);
+        case OP_AND: return simpleInstruction("OP_AND", offset);
+        case OP_OR: return simpleInstruction("OP_OR", offset);
+
+        case OP_EQUAL: return simpleInstruction("OP_EQUAL", offset);
+        case OP_LESS: return simpleInstruction("OP_LESS", offset);
+        case OP_GREATER: return simpleInstruction("OP_GREATER", offset);
+
         default:
             printf("Unknown opcode %d\n", instruction);
             return offset + 1;
@@ -59,7 +66,7 @@ int disassembleInstruction(Chunk* chunk, int offset) {
 void printValueStack(Value* stack, Value* stackTop) {
     printf("Value Stack: [ ");
     for (Value* cur = stack; cur < stackTop; cur++) {
-        printf("%g ", *cur);
+        printValue(*cur);
     }
     printf("]\n");
 }
