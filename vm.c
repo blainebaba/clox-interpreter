@@ -56,7 +56,7 @@ static void concatenate() {
     ObjString* s2 = AS_STRING(pop());
     ObjString* s1 = AS_STRING(pop());
     int length = s1->length + s2->length;
-    char* chars = ALLOCATE(char, length+1);
+    char* chars = ALLOCATE_ARRAY(char, length+1);
     memcpy(chars, s1->chars, s1->length);
     memcpy(chars + s1->length, s2->chars, s2->length);
     chars[length] = '\0';
@@ -147,9 +147,11 @@ static InterpretResult run() {
 
 void initVM() {
     resetStack();
+    vm.objects = NULL;
 }
 
 void freeVM() {
+    freeObjects();
 }
 
 InterpretResult interpret(const char* source) {
