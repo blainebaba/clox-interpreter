@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+
 #include "vm.h"
 #include "value.h"
 #include "common.h"
 #include "debug.h"
+#include "object.h"
+#include "memory.h"
 
 // global variable
 VM vm;
@@ -48,6 +52,19 @@ static bool toBool(Value value) {
     return !isFalsey(value);
 }
 
+static void concatenate() {
+    ObjString* s2 = AS_STRING(pop());
+    ObjString* s1 = AS_STRING(pop());
+    int length = s1->length + s2->length;
+    char* chars = ALLOCATE(char, length+1);
+    memcpy(chars, s1->chars, s1->length);
+    memcpy(chars + s1->length, s2->chars, s2->length);
+    chars[length] = '\0';
+
+    ObjString* objString = takeString(chars, length);
+    push(OBJ_VAL(objString));
+}
+
 static InterpretResult run() {
     #define READ_BYTE() (*vm.ip++)
     #define READ_CONST() (vm.chunk->constants.values[READ_BYTE()])
@@ -88,7 +105,18 @@ static InterpretResult run() {
                 }
                 push(NUMBER_VAL(-AS_NUMBER(pop()))); 
                 break;
-            case OP_ADD: BINARY_OP(NUMBER_VAL, +); break;
+            case OP_ADD: 
+                if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
+                    concatenate();
+                } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
+                    double b = AS_NUMBER(pop());
+                    double a = AS_NUMBER(pop());
+                    push(NUMBER_VAL(a+b));
+                } else {
+                    runtimeError("Operands of '+' must be number or string.");
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                break;
             case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
             case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
             case OP_DIVIDE: BINARY_OP(NUMBER_VAL, /); break;
